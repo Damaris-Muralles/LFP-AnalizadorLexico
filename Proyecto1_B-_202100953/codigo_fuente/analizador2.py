@@ -1,6 +1,6 @@
-from email.mime import image
 from enum import Enum
 import math
+import os
 import re
 from archivohtml import constructorHTML
 
@@ -33,7 +33,7 @@ class token(Enum):
     t_o_tangente = "TANGENTE"
     t_o_mod = "MOD"
     t_num = "([0-9]+)(.[0-9]+)?"#"[0-9]+ [.[0-9]+]?"
-    t_text = "[A-Za-z0-9\[\]_.,]*"
+    t_text = "[A-Za-zÀ-ÿ\u00f1\u00d10-9\%\*\+\/=√_,-.:;\(\)\[\]\^\s]*"
    
 
 class analizador:
@@ -46,14 +46,13 @@ class analizador:
         self.resultado =[]
         self.listaerror = []
         self.temporal_c = ""
-        self.resulttxt=""
         self.listaapariencia= []
         self.cont = 1
         self.tipe = 0
         self.conte = 0
     
-    def compilador(self):
-        archivo = open("../archivos/prueba3.txt", "r")
+    def compilador(self,dir):
+        archivo = open(dir, "r",encoding="utf-8")
         contenido = archivo.readlines()
         archivo.close()
         #print(contenido)
@@ -63,7 +62,6 @@ class analizador:
         lista_c = []
 
         for i in contenido:
-
             i = i.replace(" ", "")
             i = i.replace("\n", "")
             if i != "":
@@ -79,10 +77,10 @@ class analizador:
         print(self.listaoperacion)
         print("")
         print(self.resultado)
-        self.resulttxt=self.texto_f(result["cadena"])
+        resulttxt=self.texto_f(result["cadena"])
         print("")
-        print(self.resulttxt)  
-        result1=self.funcion(self.resulttxt["cadena"])
+        print(resulttxt)  
+        result1=self.funcion(resulttxt["cadena"])
         print("")
         print(result1) 
         result2=self.estilo(result1["cadena"])
@@ -90,12 +88,41 @@ class analizador:
         print(result2)   
         print("")
         #if self.resultado:
-        #    constructorHTML(self.resultado,"RESULTADOS_202100953",None)  
+        #    constructorHTML(self.resultado,"RESULTADOS_202100953",None)
+        print("llego")
+        tam=len(self.listaapariencia)
+        for k in range(tam):
+            if self.listaapariencia[k]=="NEGRO":
+                self.listaapariencia[k]="BLACK"
+            if self.listaapariencia[k] =="AZUL":
+                self.listaapariencia[k]="BLUE"
+            if self.listaapariencia[k] =="ROJO":
+                self.listaapariencia[k]= "RED"
+            if self.listaapariencia[k] =="AMARILLO":
+                self.listaapariencia[k]= "YELLOW"
+            if self.listaapariencia[k]=="ANARANJADO":
+                self.listaapariencia[k]= "ORANGE"
+            if self.listaapariencia[k]=="VERDE":
+                self.listaapariencia[k]= "GREEN"
+            if self.listaapariencia[k]=="MORADO":
+                self.listaapariencia[k]= "PURPLE"
+        if self.resultado:
+            print("entro")
+            constructorHTML(self.resultado,self.listaapariencia,result1["resultado"],resulttxt["resultado"],"R" )
         if self.listaerror:
+            file = open("errores.dot", "w", encoding='UTF-8')
+            text = 'digraph { \n'
+            text += 'nodo1[shape=none ,label=<<TABLE><TR><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>No.</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Token</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Tipo</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Fila</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Columna</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Descripcion</FONT></TD></TR>'
             for i in self.listaerror:
-               print( i["No"]," | ", i["token"]," | ", i["tipo"]," | ", i["fila"]," | ", i["columna"]," | ", i["descrip"]) 
-         #   constructorHTML(None,"ERRORES_202100953","cop")
+               print( i["No"]," | ", i["token"]," | ", i["tipo"]," | ", i["fila"]," | ", i["columna"]," | ", i["descrip"])
+               text += '<TR><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["No"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["token"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["tipo"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["fila"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["columna"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[2]}"'+'>'+f'{i["descrip"]}'+'</FONT></TD></TR>'
+            text +='</TABLE>>] \n'
+            text += '}'
+            file.write(text)
+            file.close()
 
+            os.system('dot -Tpng errores.dot -o errores.png')
+            constructorHTML(None,self.listaapariencia,None,None,"E")
     def numero (self,cadena:str):
         tokens = [
             token.t_menor.value,
@@ -167,8 +194,10 @@ class analizador:
             try:
                 #print("token; "+ i)
                 if "NUMERO"== i:
+                   # print("entro a numero en operacion")
                     #print("cadena: "+cadena)
                     if self.etiqueta(cadena, "<Numero>"):
+                      #  print("lee numero")
                         result =self.numero(cadena)
                         cadena =result["cadena"]
                         if result["error"]:
@@ -190,6 +219,7 @@ class analizador:
                             self.listaoperacion.append(result["resultado"])
                             #print(self.listaoperacion)
                     elif self.etiqueta(cadena,"<Operacion="):
+                       # print("lee etiqueta operacion")
                         self.cont+=1
                         result =self.operador(cadena)
                         cadena =result["cadena"]
@@ -224,12 +254,13 @@ class analizador:
                 else:
                     oper=""
                     if "OPERADOR"== i:
+                       # print("entra a operador")
                         #suma
                         opatron =re.compile(f"^SUMA")
                         t =opatron.search(cadena)
                         if t!=None:
                             i="SUMA"
-                            #print("entron a operador")
+                           # print("entron a suma")
                             _operador = token.t_o_suma
                             if tokens[6]!="NUMERO":
                                 tokens.insert(6, "NUMERO")
@@ -237,10 +268,10 @@ class analizador:
 
                          #Resta
                         opatron =re.compile(f"^RESTA")
-                        #print("entra a res")
                         t =opatron.search(cadena)
                         if t!=None:
                             i="RESTA"
+                            #print("entro a res")
                             _operador = token.t_o_resta
                             if tokens[6]!="NUMERO":
                                 tokens.insert(6, "NUMERO")
@@ -251,6 +282,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="MULTIPLICACION"
+                            #print("entro a multi")
                             _operador = token.t_o_multiplicacion
                             if tokens[6]!="NUMERO":
                                 tokens.insert(6, "NUMERO")
@@ -260,6 +292,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="DIVISION"
+                            #print("entro a div")
                             _operador = token.t_o_division
                             if tokens[6]!="NUMERO":
                                 tokens.insert(6, "NUMERO")
@@ -269,6 +302,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="POTENCIA"
+                          #  print("entro a pot")
                             _operador = token.t_o_potencia
                             if tokens[6]!="NUMERO":
                                 tokens.insert(6, "NUMERO")
@@ -287,6 +321,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="INVERSO"
+                         #   print("entro a inv")
                             _operador = token.t_o_inverso
                             tokens.pop(6)
                          #SENO
@@ -294,6 +329,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="SENO"
+                            #print("entro a sen")
                             _operador = token.t_o_seno
                             tokens.pop(6)
                          #COSENO
@@ -301,6 +337,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="COSENO"
+                           # print("entro a cos")
                             _operador = token.t_o_coseno
                             tokens.pop(6)
                          #TANGENTE
@@ -308,6 +345,7 @@ class analizador:
                         t =opatron.search(cadena)
                         if t!=None:
                             i="TANGENTE"
+                            #print("entro a rtan")
                             _operador = token.t_o_tangente
                             tokens.pop(6)
                             #print(tokens)
@@ -324,6 +362,7 @@ class analizador:
                          #ninguno
                         if _operador==None:
                             #guardar error
+                           # print("error operador")
                             # linea, columna, error,simbolo, token donde ocurre error
                             print("Ocurrio un error operacion")
                             self.tipe = 9
@@ -342,7 +381,9 @@ class analizador:
                         self.listaoperacion.append(_operador.value)
 
                     elif "/"== i and self.listaoperacion!=[]:
-                       # print("entra")
+                        #print(self.listaoperacion)
+                        #print()
+                        #print("entra a realizar operacion")
                         #print(self.cont)
                         for j in range(self.cont):
                             
@@ -398,12 +439,12 @@ class analizador:
                                         resultadoop=float(self.listaoperacion[posicion])/float(self.listaoperacion[posicion+1])
                                     if self.listaoperacion[posicion-1]=="POTENCIA":
                                         if j==0:
-                                            oper=oper+ini+f"{float(self.listaoperacion[posicion])}^{float(self.listaoperacion[posicion+1])}"+fin
+                                            oper=oper+ini+f"{float(self.listaoperacion[posicion+1])}^{float(self.listaoperacion[posicion])}"+fin
                                         elif j>0 and j<self.cont-1:
-                                            oper=ini+f"{float(self.listaoperacion[posicion])}^{oper}"+fin
+                                            oper=ini+f"{float(self.listaoperacion[posicion+1])}^{oper}"+fin
                                         else:
-                                            oper=f"{float(self.listaoperacion[posicion])}^{oper}"
-                                        resultadoop=float(self.listaoperacion[posicion])**float(self.listaoperacion[posicion+1])
+                                            oper=f"{float(self.listaoperacion[posicion+1])}^{oper}"
+                                        resultadoop=float(self.listaoperacion[posicion+1])**float(self.listaoperacion[posicion])
                                     if self.listaoperacion[posicion-1]=="MOD":
                                         if j==0:
                                             oper=oper+ini+f"{float(self.listaoperacion[posicion])}%{float(self.listaoperacion[posicion+1])}"+fin
@@ -414,11 +455,11 @@ class analizador:
                                         resultadoop=float(self.listaoperacion[posicion])%float(self.listaoperacion[posicion+1])
                                     if self.listaoperacion[posicion-1]=="RAIZ":
                                         if j==0:
-                                            oper=oper+ini+f"{float(self.listaoperacion[posicion])}&radic{float(self.listaoperacion[posicion+1])}"+fin
+                                            oper=oper+ini+f"{float(self.listaoperacion[posicion])}√{float(self.listaoperacion[posicion+1])}"+fin
                                         elif j>0 and j<self.cont-1:
-                                            oper=ini+f"{float(self.listaoperacion[posicion])}&radic{oper}"+fin
+                                            oper=ini+f"{float(self.listaoperacion[posicion])}√{oper}"+fin
                                         else:
-                                            oper=f"{float(self.listaoperacion[posicion])}&radic{oper}"
+                                            oper=f"{float(self.listaoperacion[posicion])}√{oper}"
                                         resultadoop=float(self.listaoperacion[posicion+1])**(1/float(self.listaoperacion[posicion]))
                                 if self.listaoperacion[posicion]=="SENO":
                                     op=1
@@ -428,7 +469,8 @@ class analizador:
                                         oper=ini+f"SEN({oper})"+fin
                                     else:
                                         oper=f"SEN({oper})"
-                                    resultadoop=math.sin(float(self.listaoperacion[posicion+1]))
+                                    radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
+                                    resultadoop=math.sin(radianes)
                                 if self.listaoperacion[posicion]=="COSENO":
                                     op=1
                                     if j==0:
@@ -437,9 +479,9 @@ class analizador:
                                         oper=ini+f"COS({oper})"+fin
                                     else:
                                         oper=f"COS({oper})"
-                                    resultadoop=math.cos(float(self.listaoperacion[posicion+1]))
+                                    radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
+                                    resultadoop=math.cos(radianes)
                                 if self.listaoperacion[posicion]=="TANGENTE":
-                                    
                                     op=1
                                     if j==0:
                                         oper=oper+ini+f"TAN({float(self.listaoperacion[posicion+1])})"+fin
@@ -447,8 +489,9 @@ class analizador:
                                         oper=ini+f"TAN({oper})"+fin
                                     else:
                                         oper=f"TAN({oper})"+fin
-                                    resultadoop=math.tan(float(self.listaoperacion[posicion+1]))
-                                   # print(resultadoop)
+                                    radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
+                                    resultadoop=math.tan(radianes)
+                                # print(resultadoop)
                                 if self.listaoperacion[posicion]=="INVERSO":
                                     op=1
                                     if j==0:
@@ -458,29 +501,32 @@ class analizador:
                                     else:
                                         oper=f"1/"+oper
                                     resultadoop=1/(float(self.listaoperacion[posicion+1]))   
-                                
-                                #print("llega")
-                                self.listaoperacion.pop(posicion+1)
-                                #print("hace")
-                                self.listaoperacion.pop(posicion)
-                                #print("hace")
-                                if posicion-1>=0 and op==0:
-                                    self.listaoperacion.pop(posicion-1)
-                                    #print("hace")
-                                if j!=self.cont-1:
-                                  #  print("hace primera")
-                                    #print(resultadoop)
-                                    #print(self.listaoperacion)
-                                    self.listaoperacion.append(resultadoop)
-                                    #print("llega")
-                                   # print(self.listaoperacion)
+                            
+                            #print("llega")
+                            self.listaoperacion.pop(posicion+1)
+                           #print("hace")
+                            self.listaoperacion.pop(posicion)
+                            #print("hace")
+                            if posicion-1>=0 and op==0:
+                                self.listaoperacion.pop(posicion-1)
+                               # print("hace")
+                           # print(j)
+                           # print(self.cont-1)
+                            if j!=self.cont-1:
+                              #  print("hace primera")
+                               # print(resultadoop)
+                                #print(self.listaoperacion)
+                                self.listaoperacion.append(resultadoop)
+                               # print("llega")
+                                #print(self.listaoperacion)
+                            else:
+                               # print("hace segunda")
+                                if self.cont>1:
+                                    self.resultado.append({"op":"COMPLEJA","proceso":oper,"res":resultadoop})
                                 else:
-                                    if self.cont>1:
-                                        self.resultado.append({"op":"COMPLEJA","proceso":oper,"res":resultadoop})
-                                    else:
-                                        self.resultado.append({"op":_operador.value,"proceso":oper,"res":resultadoop})
-                                    #print(self.listaoperacion)
-                                    self.cont=1            
+                                    self.resultado.append({"op":_operador.value,"proceso":oper,"res":resultadoop})
+                                #print(self.listaoperacion)
+                                self.cont=1            
                     #print(i)                            
                     
                    
@@ -496,6 +542,7 @@ class analizador:
             except:
                 #guardar error
                 # linea, columna, error,simbolo, token donde ocurre error
+                #print("entra a exepcion", i)
                 if self.tipe!=1 and self.tipe !=2:
                     if self.tipe==5:
                         self.tipe=10
@@ -563,12 +610,14 @@ class analizador:
            
             try:
                 if "OPERACIONES"==i:
+                    #print("entra a operaciones")
                     salida =True
                     while salida:
                         print("________________________________")
                         result =self.operador(cadena)
                         cadena = result["cadena"]
                         if result["error"]:
+                            #print("erorr en operaciones en tipo")
                             #guardar error
                             if  self.tipe!=1 and self.tipe!=2 and self.tipe !=5 and self.tipe !=6 and self.tipe !=9 and self.tipe !=10:
                                 self.tipe=7
@@ -594,22 +643,28 @@ class analizador:
                         
                 else:
                    # print("rompe 1")
+                   # print("entra al otro operador")
+                   # print("Patron", i)
                     patron = re.compile(f"^{i}")
                     s = patron.search(cadena)
                     self.columna += int(s.end())
                     print("| ",self.fila," | ",self.columna," | ", s.group() )
+                    #print(s.group)
                     #guardar token
                     # lista,clase, diccionario, linea columna, simbolo, nombre token
                     cadena = self.quitar_L(cadena,s.end())
                     self.lineas()
+              #  print("sale de token en tipo")
             except:
                 #guardar error
                 # linea, columna, error,simbolo, token donde ocurre error
                 if i!="OPERACIONES":
+                   #print("entra a condicional")
                     self.conte+=1
                     self.tipe=8
-                    #print("Ocurrio un error #8: ", self.tipe)
+                    print("Ocurrio un error #8p: ", self.tipe)
                     e={"No":self.conte,"token":i,"tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Numeros invalidos"}
+                    self.listaerror.append(e)
                     if int(tokens.index(i))<int(tokens.index("OPERACIONES")):
                         patron = re.compile(f"</Tipo>")
                         s = patron.search(cadena)
@@ -643,12 +698,20 @@ class analizador:
         
         for i in tokens:
             try:
+                try:
+                    patron = re.compile(f"</Tipo>")
+                    s = patron.search(cadena)
+                    self.columna = int(s.end())
+                    cadena =self.quitar_E(cadena,"</Tipo>",self.columna)
+                except:
+                    pass
                 #print(i)
                 patron = re.compile(f"^{i}")
                 s = patron.search(cadena)
                 self.columna += int(s.end())
                 print("| ",self.fila," | ",self.columna," | ", s.group())
-                
+                if i==token.t_text.value:
+                    descr= s.group()
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
             except:
@@ -710,6 +773,7 @@ class analizador:
                 print("| ",self.fila," | ",self.columna," | ", s.group())
                 if i==token.t_text.value:
                     numero= s.group()
+                    #print(numero)
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
             except:
@@ -780,7 +844,9 @@ class analizador:
                 #print("token; "+ i)
                 if "COLOR"== i:
                     #print("cadena: "+cadena)
+
                     for j in colores:
+                        
                         opatron =re.compile(f"^{j}")
                         t =opatron.search(cadena)
                         if t!=None:
@@ -788,14 +854,13 @@ class analizador:
                             #print("entron a operador")
                             _color = j
                             self.listaapariencia.append(_color)
-
+                   
                     if _color==None:
                             #guardar error
                             # linea, columna, error,simbolo, token donde ocurre error
                             print("Ocurrio un errror operacion 10")
                             return {"resultado": numero, "cadena":cadena, "error": True}  
-                    if i== token.t_num.value:
-                        self.listaapariencia.append(s.group)
+                    
 
                 #print(i)    
                 patron = re.compile(f"^{i}")
@@ -803,8 +868,10 @@ class analizador:
                 self.columna += int(s.end())
                 print("| ",self.fila," | ",self.columna," | ", s.group() )
                 if i== token.t_num.value:
-                    self.listaapariencia.append(s.group)
+                    self.listaapariencia.append(s.group())
+                    
                 #guardar token
+                #print(len(self.listaapariencia))
                 # lista,clase, diccionario, linea columna, simbolo, nombre token
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
@@ -884,4 +951,4 @@ class analizador:
             return False
     
 
-analizador().compilador()
+#analizador().compilador("../archivos/prueba.txt")

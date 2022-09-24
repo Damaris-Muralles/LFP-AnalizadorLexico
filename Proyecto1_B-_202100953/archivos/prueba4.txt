@@ -16,7 +16,7 @@
 
 <Operacion=DIVISION>
     <Numero>500</Numero>
-    <Numero>25</Numero>
+    <Numero>5</Numero>
 </Operacion>
 
 <Operacion=POTENCIA>

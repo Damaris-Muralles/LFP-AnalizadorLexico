@@ -1,0 +1,4 @@
+digraph { 
+nodo1[shape=none ,label=<<TABLE><TR><TD><FONT COLOR="BLUE">No.</FONT></TD><TD><FONT COLOR="BLUE">Token</FONT></TD><TD><FONT COLOR="BLUE">Tipo</FONT></TD><TD><FONT COLOR="BLUE">Fila</FONT></TD><TD><FONT COLOR="BLUE">Columna</FONT></TD><TD><FONT COLOR="BLUE">Descripcion</FONT></TD></TR><TR><TD><FONT COLOR="RED">1</FONT></TD><TD><FONT COLOR="RED">([0-9]+)(.[0-9]+)?</FONT></TD><TD><FONT COLOR="RED">ERROR</FONT></TD><TD><FONT COLOR="RED">26</FONT></TD><TD><FONT COLOR="RED">8</FONT></TD><TD><FONT COLOR="GREEN">Numeros invalidos</FONT></TD></TR><TR><TD><FONT COLOR="RED">2</FONT></TD><TD><FONT COLOR="RED"><</FONT></TD><TD><FONT COLOR="RED">ERROR</FONT></TD><TD><FONT COLOR="RED">5</FONT></TD><TD><FONT COLOR="RED">171</FONT></TD><TD><FONT COLOR="GREEN">Caracteres omitidos, adicionales,
+incorrectos o mezclados</FONT></TD></TR></TABLE>>] 
+}

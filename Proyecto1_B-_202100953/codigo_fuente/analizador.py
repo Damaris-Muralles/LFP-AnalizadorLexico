@@ -1,6 +1,7 @@
 
 from enum import Enum
 import math
+import os
 import re
 from archivohtml import constructorHTML
 
@@ -52,7 +53,7 @@ class analizador:
         self.conte = 0
     
     def compilador(self):
-        archivo = open("../archivos/prueba4.txt", "r",encoding="utf-8")
+        archivo = open("../archivos/prueba3.txt", "r",encoding="utf-8")
         contenido = archivo.readlines()
         archivo.close()
         #print(contenido)
@@ -79,7 +80,7 @@ class analizador:
         print(self.resultado)
         resulttxt=self.texto_f(result["cadena"])
         print("")
-        print(resulttxt)  
+        print(resulttxt)
         result1=self.funcion(resulttxt["cadena"])
         print("")
         print(result1) 
@@ -87,6 +88,7 @@ class analizador:
         print("")
         print(result2)   
         print("")
+
         #if self.resultado:
         #    constructorHTML(self.resultado,"RESULTADOS_202100953",None)
         tam=len(self.listaapariencia)
@@ -107,10 +109,21 @@ class analizador:
                 self.listaapariencia[k]= "PURPLE"
         
         constructorHTML(self.resultado,self.listaapariencia,result1["resultado"],resulttxt["resultado"],"R" )
+       
         if self.listaerror:
+            file = open("errores.dot", "w", encoding='UTF-8')
+            text = 'digraph { \n'
+            text += 'nodo1[shape=plaintext ,label =<<TABLE><TR><TD>No.</TD><TD>token</TD><TD>fila</TD><TD>columna</TD><TD>desc</TD></TR>'
             for i in self.listaerror:
-               print( i["No"]," | ", i["token"]," | ", i["tipo"]," | ", i["fila"]," | ", i["columna"]," | ", i["descrip"]) 
-         #   constructorHTML(None,"ERRORES_202100953","cop")
+               print( i["No"]," | ", i["token"]," | ", i["tipo"]," | ", i["fila"]," | ", i["columna"]," | ", i["descrip"])
+               text += '<TR><TD>'+f'{i["No"]}'+'</TD><TD>'+f'{i["token"]}'+'</TD><TD>'+f'{i["fila"]}'+'</TD><TD>'+f'{i["columna"]}'+'</TD><TD>'+f'{i["descrip"]}'+'</TD></TR>'
+            text +='</TABLE>>] \n'
+            text += '}'
+            file.write(text)
+            file.close()
+
+            os.system('dot -Tpdf errores.dot -o errores.jpg')
+            constructorHTML(None,self.listaapariencia,None,None,"E")
 
     def numero (self,cadena:str):
         tokens = [
@@ -239,6 +252,7 @@ class analizador:
                         s = patron.search(cadena)
                         self.columna = int(s.end())
                         cadena =self.quitar_E(cadena,"</Operacion>",self.columna)
+                        self.cont-=1
                         return {"resultado": numero, "cadena":cadena, "error": True, "token": i}
                 else:
                     oper=""
@@ -369,160 +383,8 @@ class analizador:
                         
                         self.listaoperacion.append(_operador.value)
 
-                    elif "/"== i and self.listaoperacion!=[]:
-                        print(self.listaoperacion)
-                        if self.cont>1:
-                            cant=self.cont
-                            self.cont-=1
-                        else:
-                            cant=1
-                        #print("entra a realizar operacion")
-                        #print(self.cont)
-                        if self.cont==1:
-                            for j in range(cant):
-                                
-                                if cant>1:
-                                    ini="("
-                                    fin=")"
-                                else:
-                                    ini=""
-                                    fin=""
-                                #print(ini)
-
-                                op=0
-                                
-                                posicion =len(self.listaoperacion)-2
-                                #print(posicion)
-                                if posicion>=0:
-                                    #print(self.listaoperacion[posicion-1])
-                                    if posicion>0:
-                                        if self.listaoperacion[posicion-1]=="SUMA":
-                                            #print("sum")
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion])}+{float(self.listaoperacion[posicion+1])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion])}+{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion])}+{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion])+float(self.listaoperacion[posicion+1])
-                                        if self.listaoperacion[posicion-1]=="RESTA":
-                                            #print("res")
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion])}-{float(self.listaoperacion[posicion+1])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion])}-{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion])}-{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion])-float(self.listaoperacion[posicion+1])
-                                        if self.listaoperacion[posicion-1]=="MULTIPLICACION":
-                                            #print("multi")
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion])}*{float(self.listaoperacion[posicion+1])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion])}*{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion])}*{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion])*float(self.listaoperacion[posicion+1])
-                                        if self.listaoperacion[posicion-1]=="DIVISION":
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion])}/{float(self.listaoperacion[posicion+1])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion])}/{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion])}/{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion])/float(self.listaoperacion[posicion+1])
-                                        if self.listaoperacion[posicion-1]=="POTENCIA":
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion+1])}^{float(self.listaoperacion[posicion])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion+1])}^{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion+1])}^{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion+1])**float(self.listaoperacion[posicion])
-                                        if self.listaoperacion[posicion-1]=="MOD":
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion])}%{float(self.listaoperacion[posicion+1])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion])}%{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion])}%{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion])%float(self.listaoperacion[posicion+1])
-                                        if self.listaoperacion[posicion-1]=="RAIZ":
-                                            if j==0:
-                                                oper=oper+ini+f"{float(self.listaoperacion[posicion])}√{float(self.listaoperacion[posicion+1])}"+fin
-                                            elif j>0 and j<self.cont-1:
-                                                oper=ini+f"{float(self.listaoperacion[posicion])}√{oper}"+fin
-                                            else:
-                                                oper=f"{float(self.listaoperacion[posicion])}√{oper}"
-                                            resultadoop=float(self.listaoperacion[posicion+1])**(1/float(self.listaoperacion[posicion]))
-                                    if self.listaoperacion[posicion]=="SENO":
-                                        op=1
-                                        if j==0:
-                                            oper=oper+ini+f"SEN({float(self.listaoperacion[posicion+1])})"+fin
-                                        elif j>0 and j<self.cont-1:
-                                            oper=ini+f"SEN({oper})"+fin
-                                        else:
-                                            oper=f"SEN({oper})"
-                                        radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
-                                        resultadoop=math.sin(radianes)
-                                    if self.listaoperacion[posicion]=="COSENO":
-                                        op=1
-                                        if j==0:
-                                            oper=oper+ini+f"COS({float(self.listaoperacion[posicion+1])})"+fin
-                                        elif j>0 and j<self.cont-1:
-                                            oper=ini+f"COS({oper})"+fin
-                                        else:
-                                            oper=f"COS({oper})"
-                                        radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
-                                        resultadoop=math.cos(radianes)
-                                    if self.listaoperacion[posicion]=="TANGENTE":
-                                        op=1
-                                        if j==0:
-                                            oper=oper+ini+f"TAN({float(self.listaoperacion[posicion+1])})"+fin
-                                        elif j>0 and j<self.cont-1:    
-                                            oper=ini+f"TAN({oper})"+fin
-                                        else:
-                                            oper=f"TAN({oper})"+fin
-                                        radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
-                                        resultadoop=math.tan(radianes)
-                                    # print(resultadoop)
-                                    if self.listaoperacion[posicion]=="INVERSO":
-                                        op=1
-                                        if j==0:
-                                            oper=oper+ini+f"1/{float(self.listaoperacion[posicion+1])}"+fin
-                                        elif j>0 and j<self.cont-1:
-                                            oper=ini+f"1/"+oper+fin
-                                        else:
-                                            oper=f"1/"+oper
-                                        resultadoop=1/(float(self.listaoperacion[posicion+1]))   
-                                
-                                #print("llega")
-                                self.listaoperacion.pop(posicion+1)
-                                #print("hace")
-                                self.listaoperacion.pop(posicion)
-                                #print("hace")
-                                if posicion-1>=0 and op==0:
-                                    self.listaoperacion.pop(posicion-1)
-                                    #print("hace")
-                                if j!=self.cont-1:
-                                  #  print("hace primera")
-                                    #print(resultadoop)
-                                    #print(self.listaoperacion)
-                                    self.listaoperacion.append(resultadoop)
-                                    #print("llega")
-                                   # print(self.listaoperacion)
-                                else:
-                                    #print("hace segunda")
-                                    if self.cont>1:
-                                        self.resultado.append({"op":"COMPLEJA","proceso":oper,"res":resultadoop})
-                                    else:
-                                        self.resultado.append({"op":_operador.value,"proceso":oper,"res":resultadoop})
-                                    #print(self.listaoperacion)
-                                    self.cont=1            
-                    #print(i)                            
-                    
                    
-
+                    #print(i)   
                     patron = re.compile(f"^{i}")
                     s = patron.search(cadena)
                     self.columna += int(s.end())
@@ -546,6 +408,7 @@ class analizador:
                         k = pato.search(cadena)
                         self.columna = int(k.end())
                         #print(k.end())
+                        self.cont-=1
                         cadena =self.quitar_E(cadena,"</Operacion>",self.columna)
                     else:
                         anterior=self.tipe
@@ -598,6 +461,7 @@ class analizador:
             token.t_mayor.value,
         ]
         numero = ""
+        oper=""
         for i in tokens:
            
             try:
@@ -607,7 +471,208 @@ class analizador:
                     while salida:
                         print("________________________________")
                         result =self.operador(cadena)
-                        cadena = result["cadena"]
+                        cadena = result["cadena"]   
+                        if not result["error"]:
+                            print("sdesert")
+                            oper=""
+                            print(self.listaoperacion)
+                            if self.listaoperacion!=[]:
+                                print("entra a realizar operacion")
+                                # print(self.cont)
+                                for j in range(self.cont):
+                                    
+                                    if self.cont>1:
+                                        ini="("
+                                        fin=")"
+                                    else:
+                                        ini=""
+                                        fin=""
+                                    #  print(ini)
+
+                                    op=0
+                                    
+                                    posicion =len(self.listaoperacion)-2
+                                    #print(posicion)
+                                    if posicion>=0:
+                                        #   print(self.listaoperacion[posicion-1])
+                                        if posicion>0:
+                                            if self.listaoperacion[posicion-1]=="SUMA" and not(self.listaoperacion[posicion]=="SENO" or self.listaoperacion[posicion]=="COSENO" or self.listaoperacion[posicion]=="TANGENTE" or self.listaoperacion[posicion-1]=="INVERSO" ):
+                                            #    print("sum")
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion])}+{float(self.listaoperacion[posicion+1])}"+fin
+                                            #        print("operador", oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion])}+{oper}"+fin
+                                            #        print("operador", oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion])}+{oper}"
+                                            #        print("operador", oper)
+                                                resultadoop=float(self.listaoperacion[posicion])+float(self.listaoperacion[posicion+1])
+                                            if self.listaoperacion[posicion-1]=="RESTA":
+                                                #print("res")
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion])}-{float(self.listaoperacion[posicion+1])}"+fin
+                                            #        print("operador", oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion])}-{oper}"+fin
+                                            #        print("operador", oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion])}-{oper}"
+                                                #       print("operador", oper)
+                                                resultadoop=float(self.listaoperacion[posicion])-float(self.listaoperacion[posicion+1])
+                                            if self.listaoperacion[posicion-1]=="MULTIPLICACION":
+                                                #print("multi")
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion])}*{float(self.listaoperacion[posicion+1])}"+fin
+                                            #        print("operador", oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion])}*{oper}"+fin
+                                                #       print("operador", oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion])}*{oper}"
+                                            #         print("operador", oper)
+                                                resultadoop=float(self.listaoperacion[posicion])*float(self.listaoperacion[posicion+1])
+                                            if self.listaoperacion[posicion-1]=="DIVISION":
+                                                #  print("div")
+                                            #    print(float(self.listaoperacion[posicion]))
+                                                #   print(float(self.listaoperacion[posicion+1]))
+
+                                                #   print("sdfsdf",self.listaoperacion[posicion])
+                                                resultadoop=float(self.listaoperacion[posicion])/float(self.listaoperacion[posicion+1])
+                                            #    print(resultadoop)
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion])}/{float(self.listaoperacion[posicion+1])}"+fin
+                                            #        print(oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion])}/{oper}"+fin
+                                            #         print(oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion])}/{oper}"
+                                            #         print("operador", oper)
+                                            if self.listaoperacion[posicion-1]=="POTENCIA":
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion+1])}^{float(self.listaoperacion[posicion])}"+fin
+                                            #          print("operador", oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion+1])}^{oper}"+fin
+                                            #           print("operador", oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion+1])}^{oper}"
+                                            #          print("operador", oper)
+                                                resultadoop=float(self.listaoperacion[posicion+1])**float(self.listaoperacion[posicion])
+                                            if self.listaoperacion[posicion-1]=="MOD":
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion])}%{float(self.listaoperacion[posicion+1])}"+fin
+                                            #           print("operador", oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion])}%{oper}"+fin
+                                            #           print("operador", oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion])}%{oper}"
+                                                #       print("operador", oper)
+                                                resultadoop=float(self.listaoperacion[posicion])%float(self.listaoperacion[posicion+1])
+                                            if self.listaoperacion[posicion-1]=="RAIZ":
+                                                if j==0:
+                                                    oper=oper+ini+f"{float(self.listaoperacion[posicion])}√{float(self.listaoperacion[posicion+1])}"+fin
+                                            #        print("operador", oper)
+                                                elif j>0 and j<self.cont-1:
+                                                    oper=ini+f"{float(self.listaoperacion[posicion])}√{oper}"+fin
+                                            #        print("operador", oper)
+                                                else:
+                                                    oper=f"{float(self.listaoperacion[posicion])}√{oper}"
+                                                #      print("operador", oper)
+                                                resultadoop=float(self.listaoperacion[posicion+1])**(1/float(self.listaoperacion[posicion]))
+                                        if self.listaoperacion[posicion]=="SENO":
+                                            op=1
+                                            if j==0:
+                                                oper=oper+ini+f"SEN({float(self.listaoperacion[posicion+1])})"+fin
+                                                #   print("operador", oper)
+                                            elif j>0 and j<self.cont-1:
+                                                oper=ini+f"SEN({oper})"+fin
+                                            #    print("operador", oper)
+                                            else:
+                                                oper=f"SEN({oper})"
+                                                #   print("operador", oper)
+                                            radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
+                                            resultadoop=math.sin(radianes)
+                                        if self.listaoperacion[posicion]=="COSENO":
+                                            op=1
+                                            if j==0:
+                                                oper=oper+ini+f"COS({float(self.listaoperacion[posicion+1])})"+fin
+                                                #   print("operador", oper)
+                                            elif j>0 and j<self.cont-1:
+                                                oper=ini+f"COS({oper})"+fin
+                                            #     print("operador", oper)
+                                            else:
+                                                oper=f"COS({oper})"
+                                                #   print("operador", oper)
+                                            # print(self.listaoperacion[posicion+1])
+                                            if self.listaoperacion[posicion+1]=="90":
+                                                resultadoop=0
+                                            else:
+                                                radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
+                                                resultadoop=math.cos(radianes)
+                                        if self.listaoperacion[posicion]=="TANGENTE":
+                                            op=1
+                                            if j==0:
+                                                oper=oper+ini+f"TAN({float(self.listaoperacion[posicion+1])})"+fin
+                                            #     print("operador", oper)
+                                            elif j>0 and j<self.cont-1:    
+                                                oper=ini+f"TAN({oper})"+fin
+                                            #    print("operador", oper)
+                                            else:
+                                                oper=f"TAN({oper})"+fin
+                                            #      print("operador", oper)
+                                            radianes = (float(self.listaoperacion[posicion+1])* math.pi)/180
+                                            resultadoop=math.tan(radianes)
+                                        # print(resultadoop)
+                                        if self.listaoperacion[posicion]=="INVERSO":
+                                            op=1
+                                            if j==0:
+                                                oper=oper+ini+f"1/{float(self.listaoperacion[posicion+1])}"+fin
+                                            #       print("operador", oper)
+                                            elif j>0 and j<self.cont-1:
+                                                oper=ini+f"1/"+oper+fin
+                                            #     print("operador", oper)
+                                            else:
+                                                oper=f"1/"+oper
+                                            resultadoop=1/(float(self.listaoperacion[posicion+1]))   
+                                    
+                                    print("llegasefwer")
+                                    self.listaoperacion.pop(posicion+1)
+                                    print("hace1")
+                                    self.listaoperacion.pop(posicion)
+                                    print("hace2")
+                                    if posicion-1>=0 and op==0:
+                                        self.listaoperacion.pop(posicion-1)
+                                    print("hace3")
+                                    if j!=self.cont-1:
+                                        print("hace primera")
+                                        print(resultadoop)
+                                        print(self.listaoperacion)
+                                        self.listaoperacion.insert(0, resultadoop)
+                                        for i in range(len(self.listaoperacion)-1):
+                                            if len(self.listaoperacion)-1 >= 0:
+                                                if self.listaoperacion[len(self.listaoperacion)-1]=="INVERSO" or self.listaoperacion[len(self.listaoperacion)-1]=="SUMA" or self.listaoperacion[len(self.listaoperacion)-1]=="RESTA" or self.listaoperacion[len(self.listaoperacion)-1]=="MULTIPLICACION" or self.listaoperacion[len(self.listaoperacion)-1]=="DIVISION" or self.listaoperacion[len(self.listaoperacion)-1]=="POTENCIA" or self.listaoperacion[len(self.listaoperacion)-1]=="RAIZ" or self.listaoperacion[len(self.listaoperacion)-1]=="SENO" or self.listaoperacion[len(self.listaoperacion)-1]=="COSENO" or self.listaoperacion[len(self.listaoperacion)-1]=="TANGENTE" or self.listaoperacion[len(self.listaoperacion)-1]=="MOD":
+                                                    self.listaoperacion.insert(0, self.listaoperacion[len(self.listaoperacion)-1])
+                                                    self.listaoperacion.pop(len(self.listaoperacion)-1) 
+                                                print(len(self.listaoperacion)-2)
+                                            if len(self.listaoperacion)-2 >= 0:
+                                                if  self.listaoperacion[len(self.listaoperacion)-2]=="INVERSO" or self.listaoperacion[len(self.listaoperacion)-2]=="SUMA" or self.listaoperacion[len(self.listaoperacion)-2]=="RESTA" or self.listaoperacion[len(self.listaoperacion)-2]=="MULTIPLICACION" or self.listaoperacion[len(self.listaoperacion)-2]=="DIVISION" or self.listaoperacion[len(self.listaoperacion)-2]=="POTENCIA" or self.listaoperacion[len(self.listaoperacion)-2]=="RAIZ"  or self.listaoperacion[len(self.listaoperacion)-2]=="MOD":
+                                                    self.listaoperacion.insert(0, self.listaoperacion[len(self.listaoperacion)-1])
+                                                    self.listaoperacion.pop(len(self.listaoperacion)-1) 
+                                                    self.listaoperacion.insert(0, self.listaoperacion[len(self.listaoperacion)-1])
+                                                    self.listaoperacion.pop(len(self.listaoperacion)-1) 
+                                        print("llega")
+                                        print(self.listaoperacion)
+                                    else:
+                                        print("hace segunda")
+                                        if self.cont>1:
+                                            self.resultado.append({"op":"COMPLEJA","proceso":oper,"res":resultadoop})
+                                        else:
+                                            self.resultado.append({"op":self.listaoperacion[0],"proceso":oper,"res":resultadoop})
+                                        #print(self.listaoperacion)
+                                        self.cont=1    
                         if result["error"]:
                             #print("erorr en operaciones en tipo")
                             #guardar error
@@ -695,6 +760,7 @@ class analizador:
                 print("| ",self.fila," | ",self.columna," | ", s.group())
                 if i==token.t_text.value:
                     descr= s.group()
+                
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
             except:
@@ -867,9 +933,9 @@ class analizador:
         return {"resultado": numero, "cadena":cadena, "error": False}
               
     def lineas(self):
-        
-        tmp =self.listacadena[self.fila]
         #print(self.fila)
+        tmp =self.listacadena[self.fila]
+        #print(self.listacadena[self.fila])
         if tmp ==self.temporal_c:
             #print("entra a lineas")
             self.fila += 1
@@ -877,8 +943,9 @@ class analizador:
             self.columna = 0
 
     def quitar_L (self,cadena:str,column:int):
-        #print("quitando")
+       # print("quitando")
         tmp =""
+        
         cont = 0
         for i in cadena:
             if cont >= column:
@@ -887,9 +954,9 @@ class analizador:
                 self.temporal_c += i
             cont += 1
         
-        #print(self.temporal_c)
-        #print("")
-        #print(tmp)
+       # print(self.temporal_c)
+       # print("")
+      #  print(tmp)
         return tmp
 
     def quitar_E (self,cadena:str,etiqueta:str,column:int):
@@ -922,6 +989,7 @@ class analizador:
     def etiqueta(self, cadena:str,etiquet:str):
         tmp = ""
         cont = 0
+        
         for i in cadena:
             if cont < len(etiquet):
                 tmp += i

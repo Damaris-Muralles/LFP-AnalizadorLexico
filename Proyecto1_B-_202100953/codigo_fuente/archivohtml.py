@@ -2,7 +2,7 @@ import webbrowser
 
 def constructorHTML(listaresultado,listaapariencia,titulop,descrip, archivo):
     print("imprimiendo archivo html")
-    print(listaresultado[1])
+    #print(listaresultado[1])
     if archivo=="R":
         titulopag="RESULTADOS"
     else:
@@ -64,8 +64,8 @@ def constructorHTML(listaresultado,listaapariencia,titulop,descrip, archivo):
             "      header{\n" \
             "      width:100%;\n" \
             "      height: 250px;\n" \
-            "      background: rgb(238,208,174);\n"\
-            "      background: linear-gradient(90deg, rgba(238,208,174,1) 1%, rgba(233,228,148,1) 65%);\n" \
+            "      background: rgb(0,153,210);\n"\
+            "      background: linear-gradient(90deg, rgba(0,153,210,1) 7%, rgba(65,54,88,1) 53%);\n"\
             "      background-size: cover;\n" \
             "      background-attachment: fixed;\n" \
             "      position: relative;\n" \
@@ -120,21 +120,27 @@ def constructorHTML(listaresultado,listaapariencia,titulop,descrip, archivo):
             "<br>\n" \
             "  <main>\n" \
             "    <section>\n" \
-            "      <div class=\"contenedor pagina\">\n" \
-            "           <h2 class=\"titulo\">"+f"{titulop}"+"</h2>\n" \
+            "      <div class=\"contenedor pagina\">\n" 
+    if  archivo=="R":
+
+        contenido+="           <h2 class=\"titulo\">"+f"{titulop}"+"</h2>\n" \
             "        <div class=\"curso\" id=\"main-container-descrip\">\n"\
             "           <h3 class=\"descripcion\">"+f"{descrip}" +"</h3>\n"
-    for i in range(len(listaresultado)):
-        resu=listaresultado[i]
-        if i ==0 :
-            contenido=contenido+"           <pre class=\"contenidotxt\">"+f"Operacion {i+1}: {resu['op']}" +"\n"\
-            "      "+f"{resu['proceso']}={resu['res']}"+"\n"
-        else:
-            contenido=contenido+""+f"Operacion {i+1}: {resu['op']}" +"\n"\
-            "      "+f"{resu['proceso']}={resu['res']}"+"\n"    
+        for i in range(len(listaresultado)):
+            resu=listaresultado[i]
+            if i ==0 :
+                contenido+="           <pre class=\"contenidotxt\">"+f"Operacion {i+1}: {resu['op']}" +"\n"\
+                "      "+f"{resu['proceso']}={resu['res']}"+"\n"
+            else:
+                contenido=contenido+""+f"Operacion {i+1}: {resu['op']}" +"\n"\
+                "      "+f"{resu['proceso']}={resu['res']}"+"\n"    
 
-    contenido=contenido+"           </pre>\n"\
-            "        </div>\n"\
+        contenido+="           </pre>\n"
+    else:
+        contenido+="            <p style=\"text-align:center;\">\n"\
+            "                     <img src=\"errores.png\">\n"\
+            "                   </p>\n"   
+    contenido+="        </div>\n"\
             "       </div>\n"\
             "    </section>\n" \
             "  </main>\n" \

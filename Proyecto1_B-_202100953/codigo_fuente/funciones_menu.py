@@ -2,7 +2,7 @@
 from tkinter import  filedialog as FileDialog
 from tkinter import Frame
 from tkPDFViewer import tkPDFViewer 
-
+from analizador2 import analizador
 class funciones:
     def __init__(self):
         self.ruta=""
@@ -56,7 +56,10 @@ class funciones:
             archivo.close()
         else:
             self.ruta = ""   
-     
+
+    def run(self):
+        print("ruta",self.ruta)
+        analizador().compilador(self.ruta)
     #l1=Label(q,text='ADD TEXT HERE ',fg='grey',bg=None)
     #l=('Calibri (Body)',24,'bold')
     #l1.config(font=l)

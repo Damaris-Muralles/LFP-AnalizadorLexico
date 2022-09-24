@@ -102,8 +102,11 @@ def guardar_como(texto):
     funcion.salve_c(contenido)
     messagebox.showinfo(message="El archivo se guardo correctamente",title="Guardar como")
 
-def ejecutar():
-    pass
+def ejecutar(texto):
+    contenido = texto.get(1.0,'end-1c')
+    op=funcion.salve(contenido)
+
+    funcion.run()
 
 def salir(q):
     q.destroy()
@@ -122,8 +125,7 @@ def info():
 
 if __name__ == "__main__":
     funcion=funciones()
-    ventanaanalizador()
-    """  
+    #ventanaanalizador()
     w = Tk()
     width_of_window = 427
     height_of_window = 250
@@ -185,7 +187,9 @@ if __name__ == "__main__":
     l3.place(x=50,y=110)
 
     w.mainloop()
-"""
+    """  
+   
+    """
     
    
     
