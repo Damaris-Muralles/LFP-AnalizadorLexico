@@ -3,11 +3,11 @@ from tkinter import  filedialog as FileDialog
 from tkinter import Frame
 from tkPDFViewer import tkPDFViewer 
 from analizador2 import analizador
+
 class funciones:
     def __init__(self):
         self.ruta=""
-
-        
+ 
     def pdfviwer(self,menuop):
         #Frame para visor de pdf
         frame2 = Frame()
@@ -16,11 +16,11 @@ class funciones:
         v1 = tkPDFViewer.ShowPdf()
         v1.img_object_li.clear()
         if menuop==0:
-            v2 = v1.pdf_view(frame2, pdf_location = r"../archivos/Vista_previa.pdf",width = 70, height = 27.2, bar=False)
+            v2 = v1.pdf_view(frame2, pdf_location = r"Vista_previa.pdf",width = 70, height = 27.2, bar=False)
         elif menuop==1:
-            v2 = v1.pdf_view(frame2, pdf_location = r"../Documentacion/Manual_usuario.pdf",width = 70, height = 27.2,bar=False)
+            v2 = v1.pdf_view(frame2, pdf_location = r"Manual_usuario.pdf",width = 70, height = 27.2,bar=False)
         else:
-            v2 = v1.pdf_view(frame2, pdf_location = r"../Documentacion/Manual_tecnico.pdf",width = 70, height = 27.2,bar=False)
+            v2 = v1.pdf_view(frame2, pdf_location = r"Manual_tecnico.pdf",width = 70, height = 27.2,bar=False)
         
         v2.pack()
 
@@ -34,6 +34,7 @@ class funciones:
             contenido =  archivo.read()
             archivo.close()
             return contenido
+   
     def salve(self, contenido):
         op=0
         if self.ruta != "":
@@ -58,8 +59,17 @@ class funciones:
             self.ruta = ""   
 
     def run(self):
-        print("ruta",self.ruta)
+        #print("ruta",self.ruta)
         analizador().compilador(self.ruta)
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #l1=Label(q,text='ADD TEXT HERE ',fg='grey',bg=None)
     #l=('Calibri (Body)',24,'bold')
     #l1.config(font=l)

@@ -13,7 +13,7 @@ def ventanaanalizador():
     q.title('Analizador lexico')
     q.config(bg = "#413658") #181e36#413658
     q.geometry('1200x900+40+0')
-    q.iconbitmap('recursos/logo.ico')
+    q.iconbitmap('logo.ico')
 
     #Frame para visor de pdf
     funcion.pdfviwer(0)
@@ -83,7 +83,6 @@ def ventanaanalizador():
    
     q.mainloop()
 
-    
 def abrir(texto):
     contenido=funcion.viewer()
     texto.delete(1.0, 'end')           # Nos aseguramos de que esté vacío
@@ -105,7 +104,6 @@ def guardar_como(texto):
 def ejecutar(texto):
     contenido = texto.get(1.0,'end-1c')
     op=funcion.salve(contenido)
-
     funcion.run()
 
 def salir(q):
@@ -113,13 +111,12 @@ def salir(q):
 
 def manualu():
     funcion.pdfviwer(1)
-   
-    
+ 
 def manualt():
     funcion.pdfviwer(2)
 
 def info():
-    messagebox.showinfo(message= f"Informacion del desarollador:\nDamaris Julizza Muralles Veliz\nCarnet: 202100953",title="Temas de ayuda")
+    messagebox.showinfo(message= f"Informacion del desarollador:\nDamaris Julizza Muralles Veliz\nCarnet: 202100953\nCurso: LFP\nSeccion: B-",title="Temas de ayuda")
     funcion.pdfviwer(0)
 
 

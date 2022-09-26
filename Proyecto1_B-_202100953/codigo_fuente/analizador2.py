@@ -32,10 +32,9 @@ class token(Enum):
     t_o_coseno = "COSENO"
     t_o_tangente = "TANGENTE"
     t_o_mod = "MOD"
-    t_num = "([0-9]+)(.[0-9]+)?"#"[0-9]+ [.[0-9]+]?"
+    t_num = "([0-9]+)(.[0-9]+)?"
     t_text = "[A-Za-zÀ-ÿ\u00f1\u00d10-9\%\*\+\/=√_,-.:;\(\)\[\]\^\s]*"
    
-
 class analizador:
     def __init__(self):
         self.cadena = ""
@@ -59,37 +58,72 @@ class analizador:
 
         #quitando espacios y saltos
         cadena_n = ""
+        cadena_t = ""
         lista_c = []
-
+        c=0
+        veces=0
         for i in contenido:
             i = i.replace(" ", "")
             i = i.replace("\n", "")
             if i != "":
-                cadena_n += i
-                lista_c.append(i)
+                
+                if  i =="<Texto>":
+                    c = 1
+                if i=="</Texto>":
+                    c = 0
+                if c==1:
+                    if veces==0:
+                        cadena_t+=i
+                        lista_c.append(i)
+                    elif veces==1:
+                        lista_c.append(i)
+                        cadena_t+=i
+                    else:
+                        cadena_t+=i
+                        agregar=lista_c[len(lista_c)-1]
+                        lista_c[len(lista_c)-1]=agregar+i
+                       # print(lista_c[len(lista_c)-1])
+                    veces+=1   
+                else:
+                    if veces>0:
+                        cadena_t+=i
+                    else:
+                        cadena_n += i
+                    lista_c.append(i)
+            
         print(cadena_n)
-        print(lista_c)
+        print("")
+        print(cadena_t)
         print("")
         self.listacadena = lista_c
         result=self.tipo(cadena_n)
         print("")
         print(result)  
-        print(self.listaoperacion)
         print("")
         print(self.resultado)
-        resulttxt=self.texto_f(result["cadena"])
+        print("")
+        resulttxt=self.texto_f(cadena_t)
         print("")
         print(resulttxt)  
+        print("")
         result1=self.funcion(resulttxt["cadena"])
         print("")
         print(result1) 
+        print("")
         result2=self.estilo(result1["cadena"])
         print("")
         print(result2)   
         print("")
         #if self.resultado:
         #    constructorHTML(self.resultado,"RESULTADOS_202100953",None)
-        print("llego")
+        if not self.listaapariencia:
+            self.listaapariencia.append("NEGRO")
+            self.listaapariencia.append("50")
+            self.listaapariencia.append("NEGRO")
+            self.listaapariencia.append("30")
+            self.listaapariencia.append("NEGRO")
+            self.listaapariencia.append("20")
+        
         tam=len(self.listaapariencia)
         for k in range(tam):
             if self.listaapariencia[k]=="NEGRO":
@@ -107,22 +141,35 @@ class analizador:
             if self.listaapariencia[k]=="MORADO":
                 self.listaapariencia[k]= "PURPLE"
         if self.resultado:
-            print("entro")
+            #print("entro")
             constructorHTML(self.resultado,self.listaapariencia,result1["resultado"],resulttxt["resultado"],"R" )
+        print("")
+        print("LISTA DE ERRORES")
         if self.listaerror:
             file = open("errores.dot", "w", encoding='UTF-8')
             text = 'digraph { \n'
             text += 'nodo1[shape=none ,label=<<TABLE><TR><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>No.</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Token</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Tipo</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Fila</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Columna</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[0]}"'+'>Descripcion</FONT></TD></TR>'
             for i in self.listaerror:
-               print( i["No"]," | ", i["token"]," | ", i["tipo"]," | ", i["fila"]," | ", i["columna"]," | ", i["descrip"])
-               text += '<TR><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["No"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["token"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["tipo"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["fila"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["columna"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[2]}"'+'>'+f'{i["descrip"]}'+'</FONT></TD></TR>'
+                if i["token"]=="<":
+                    i["token"]="menor"
+                elif  i["token"]==">":
+                    i["token"]="mayor"
+                elif  i["token"]=="/":
+                    i["token"]="slash"
+                elif  i["token"]=="=":
+                    i["token"]="igual"   
+
+                print( i["No"]," | ", i["token"]," | ", i["tipo"]," | ", i["fila"]," | ", i["columna"]," | ", i["descrip"])
+                text += '<TR><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["No"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["token"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["tipo"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["fila"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[4]}"'+'>'+f'{i["columna"]}'+'</FONT></TD><TD><FONT COLOR='+f'"{self.listaapariencia[2]}"'+'>'+f'{i["descrip"]}'+'</FONT></TD></TR>'
             text +='</TABLE>>] \n'
             text += '}'
             file.write(text)
             file.close()
 
             os.system('dot -Tpng errores.dot -o errores.png')
+            print("")
             constructorHTML(None,self.listaapariencia,None,None,"E")
+   
     def numero (self,cadena:str):
         tokens = [
             token.t_menor.value,
@@ -157,7 +204,7 @@ class analizador:
                 if i==token.t_num.value:
                     self.tipe = 1
                     print("Ocurrio un error #1: ", self.tipe)
-                    e={"No":self.conte,"token":i,"tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Numeros invalidos"}
+                    e={"No":self.conte,"token":"NUMERO","tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Numeros invalidos"}
                 else:
                     self.tipe =2
                     print("Ocurrio un error #2: ", self.tipe)
@@ -195,7 +242,7 @@ class analizador:
                 #print("token; "+ i)
                 if "NUMERO"== i:
                    # print("entro a numero en operacion")
-                    #print("cadena: "+cadena)
+                   # print("cadena: "+cadena)
                     if self.etiqueta(cadena, "<Numero>"):
                       #  print("lee numero")
                         result =self.numero(cadena)
@@ -679,8 +726,10 @@ class analizador:
                         cadena =self.quitar_E(cadena,"</Operacion>",self.columna)
                     # linea, columna, error,simbolo, token donde ocurre error
                 #print("rompe")
+                self.temporal_c=""
                 return {"resultado": numero, "cadena":cadena, "error": True}
         print("no ocurrio ningun error")
+        self.temporal_c=""
         return {"resultado": numero, "cadena":cadena, "error": False}
 
     def texto_f(self,cadena:str):
@@ -695,14 +744,15 @@ class analizador:
             token.t_mayor.value,
         ]
         descr =""
-        
+        veces=0
         for i in tokens:
             try:
                 try:
-                    patron = re.compile(f"</Tipo>")
-                    s = patron.search(cadena)
-                    self.columna = int(s.end())
-                    cadena =self.quitar_E(cadena,"</Tipo>",self.columna)
+                    if veces==0:
+                        #print(self.fila)
+                        self.fila=int(self.listacadena.index("<Texto>"))
+                       # print(self.fila)
+                    veces=1
                 except:
                     pass
                 #print(i)
@@ -715,8 +765,14 @@ class analizador:
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
             except:
+                self.conte+=1
                 #guardar error
                 # linea, columna, error,simbolo, token donde ocurre error
+                if  i==token.t_text.value:
+                    e={"No":self.conte,"token":"TEXTO","tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"No se puede leer texto"}
+                else:  
+                    e={"No":self.conte,"token": i,"tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Caracteres omitidos, adicionales,\nincorrectos o mezclados"}             # linea, columna, error,simbolo, token donde ocurre error
+                self.listaerror.append(e)
                 print("Ocurrio un errror 8")
                 return {"resultado": "", "cadena":cadena, "error": True}
         #print(numero)
@@ -777,8 +833,14 @@ class analizador:
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
             except:
+                self.conte+=1
                 #guardar error
                 # linea, columna, error,simbolo, token donde ocurre error
+                if  i==token.t_text.value:
+                    e={"No":self.conte,"token":"TEXTO","tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"No se puede leer texto"}
+                else:  
+                    e={"No":self.conte,"token":i,"tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Caracteres omitidos, adicionales,\nincorrectos o mezclados"}             # linea, columna, error,simbolo, token donde ocurre error
+                self.listaerror.append(e)
                 print("Ocurrio un errror 9")
                 return {"resultado": numero, "cadena":cadena, "error": True}
         #print(numero)
@@ -876,8 +938,14 @@ class analizador:
                 cadena = self.quitar_L(cadena,s.end())
                 self.lineas()
             except:
+                self.conte+=1
                 #guardar error
                 # linea, columna, error,simbolo, token donde ocurre error
+                if  i==token.t_num.value:
+                    e={"No":self.conte,"token":"NUMERO","tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Numero invalido"}
+                else:  
+                    e={"No":self.conte,"token":i,"tipo":"ERROR","fila":self.fila,"columna":self.columna, "descrip":"Caracteres omitidos, adicionales,\nincorrectos o mezclados"}             # linea, columna, error,simbolo, token donde ocurre error
+                self.listaerror.append(e)
                 print("Ocurrio un errror 11")
                 return {"resultado": numero, "cadena":cadena, "error": True}
 
@@ -886,7 +954,8 @@ class analizador:
     def lineas(self):
         
         tmp =self.listacadena[self.fila]
-        #print(self.fila)
+        #print(tmp)
+        #print(self.temporal_c)
         if tmp ==self.temporal_c:
             #print("entra a lineas")
             self.fila += 1
@@ -910,22 +979,21 @@ class analizador:
         return tmp
 
     def quitar_E (self,cadena:str,etiqueta:str,column:int):
-        #print("quitando E")
+       # print("quitando E")
         tmp =""
         cont = 0
-        #print(len(self.listacadena))
-        pos = int(self.listacadena.index(etiqueta))
+        #print(self.fila)
         for k in range(len(self.listacadena)):
             #print("entron a cambio")
-            if k<= pos:
+            if k<= self.fila:
                 #print("entrando")
-                #print(self.listacadena[k])
+              #  print(self.listacadena[k])
                 cambio=self.listacadena[k]
                 self.listacadena[k]=f"{cambio}{k}"
-
-        #print(self.listacadena[pos])
+        pos = int(self.listacadena.index(etiqueta))
+       # print(self.listacadena[pos])
         self.fila=pos+1
-       # print(self.fila)
+        #print(self.fila)
         self.columna=0
         for i in cadena:
             if cont >= column:

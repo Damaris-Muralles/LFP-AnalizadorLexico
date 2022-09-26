@@ -1002,4 +1002,4 @@ class analizador:
             return False
     
 
-analizador().compilador()
+#analizador().compilador()

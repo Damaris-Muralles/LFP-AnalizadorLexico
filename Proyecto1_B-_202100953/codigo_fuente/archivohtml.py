@@ -7,7 +7,7 @@ def constructorHTML(listaresultado,listaapariencia,titulop,descrip, archivo):
         titulopag="RESULTADOS"
     else:
         titulopag="ERRORES"
-
+    
     file =open(f"{titulopag}"+"_202100953.html","w",encoding= "utf-8")
     contenido ="<!doctype html>\n" \
             "<html lang=\"es\">\n" \
@@ -151,4 +151,5 @@ def constructorHTML(listaresultado,listaapariencia,titulop,descrip, archivo):
     #"+f"{listaapariencia[1]}" +"
     file.write(contenido)
     file.close()
+    print("completado")
     webbrowser.open_new_tab(f"{titulopag}"+"_202100953.html")

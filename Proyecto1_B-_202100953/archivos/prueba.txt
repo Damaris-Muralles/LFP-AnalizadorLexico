@@ -1,9 +1,9 @@
 <Tipo> 
 <Operacion= SUMA> 
 <Numero> 4.5 </Numero> 
-<Numero> 5.32 </Numero> 
+<Numero> 5.33 </Numero> 
 </Operacion> 
-<Operacion= 
+<Operacion= RESTA>
 <Numero> 84 </Numero> 
 <Numero> 33.7 </Numero> 
 </Operacion> 
@@ -19,13 +19,16 @@
 <Numero> 5.4 </Numero> 
 <Operacion= MULTIPLICACION> 
 <Numero> 7 </Numero>
-<Numero> 8 </Numero>
+<Operacion= DIVISION> 
+<Numero> 45 </Numero> 
+<Numero> 9 </Numero> 
+</Operacion> 
 </Operacion> 
 </Operacion> 
 </Tipo> 
 <Texto> 
 Realizar las operaciones básicas de suma, resta, multiplicación y 
-división así como operaciones complejas. 
+división así como operaciones complejas, resultados: operacion 1=9.83, operacion 2 = 50.3, operacion 3 =35, operacion 4=5, operacion 5=40.4. 
 </Texto> 
 <Funcion = ESCRIBIR> 
 <Titulo> Operaciones </Titulo> 
@@ -33,7 +36,7 @@ división así como operaciones complejas.
 <Contenido> [TIPO] </Contenido> 
 </Funcion> 
 <Estilo> 
-<Titulo Color=AZUL Tamanio=12/> 
-<Descripcion Color=VERDE Tamanio=3/> 
-<Contenido Color=ROJO Tamanio=3/> 
+<Titulo Color=AZUL Tamanio=50/> 
+<Descripcion Color=VERDE Tamanio=30/> 
+<Contenido Color=ROJO Tamanio=20/> 
 </Estilo>
