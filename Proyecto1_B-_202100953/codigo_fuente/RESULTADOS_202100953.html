@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+  <title> REPORTE DE RESULTADOS</title>
+  <link rel="shortcut icon" type="image/x-icon" href="src/imagenes/icono1.jpg" >
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      }
+
+      body{
+      font-family: Arial;
+      color:BLUE;
+      font-size: 10px;
+      background: #f2f2f2;
+      }
+
+      .contenedor{
+      padding: 60px 0;
+      width: 95%
+      max-width: 1000px
+      margin: auto;
+      overflow: hidden;
+      }    
+
+      .titulo{
+      color: BLACK;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 50px;
+      } 
+      .descripcion{
+      color: RED;
+      font-size: 10px;
+      text-align: justify;
+      margin-left: 50px;
+      margin-right: 50px;
+      } 
+      .contenidotxt{
+       color: BLUE;
+       font-size: 10px;
+       text-align: left;
+       margin-top: 30px;
+       margin-left: 50px;
+       margin-right: 50px;
+       }
+  
+      header{
+      width:100%;
+      height: 250px;
+      background: rgb(0,153,210);
+      background: linear-gradient(90deg, rgba(0,153,210,1) 7%, rgba(65,54,88,1) 53%);
+      background-size: cover;
+      background-attachment: fixed;
+      position: relative;
+      }  
+     
+      header .textos-header{
+      display: flex;
+      height: 430px;
+      width: 100%;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      }
+      
+      .textos-header h1 {
+         font-size: 50px;
+         color: WHITE;
+      }
+
+      .textos-header h2 {
+         font-size: 30px;
+         font-weight:300;
+         color:WHITE;
+      }
+
+      .wave{
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      }
+
+      #main-container{
+      margin:60px auto;
+      width:900px;
+      } 
+
+  </style>
+
+</head>
+
+<body> 
+
+ <header>
+    <section class="textos-header">
+       <br>
+       <br>
+       <h1>RESULTADOS</h1>
+       <h2> Analizador </h2>
+       <div class="wave" style="height: 150px; overflow: hidden;" ><svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;"><path            d="M-11.00,130.77 C207.38,132.73 264.95,80.44 499.15,126.81 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: #f2f2f2;"></path></svg></div>
+    </section>
+  </header>
+<br>
+  <main>
+    <section>
+      <div class="contenedor pagina">
+           <h2 class="titulo">OperacionesCOMPLEJAS</h2>
+        <div class="curso" id="main-container-descrip">
+           <h3 class="descripcion">ArchivodepruebaparaoperacionesCOMPLEJAS</h3>
+           <pre class="contenidotxt">Operacion 1: COMPLEJA
+      (20.0*4.0)=80.0
+           </pre>
+        </div>
+       </div>
+    </section>
+  </main>
+
+</body>
+
+</html>
